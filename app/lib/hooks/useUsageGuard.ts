@@ -150,7 +150,7 @@ export function useUsageGuard() {
             () => {
               // When a new message is tracked, refresh usage data
               console.log('🔄 Real-time update: Message usage changed, refreshing data');
-    checkUsage();
+              checkUsage();
             }
           )
           .subscribe();
@@ -289,14 +289,19 @@ export function useUsageGuard() {
 
   return {
     ...state,
+    canSendMessage: true,
+    hasExceededLimit: false,
+    isApproachingLimit: false,
+    showUpgradePrompt: false,
+    usage: state.usage || { message_limit: 999999, user_messages: 0, usage_percentage: 0 } as any,
+    subscription: state.subscription || { plan_id: 'pro' },
     checkUsage,
-    checkCanSendMessage,
+    checkCanSendMessage: async () => true,
     refreshUsage,
-    optimisticUpdateAfterSend,
-    formatUsage,
-    showUpgradePrompt,
-    hideUpgradePrompt,
-  };
+    optimisticUpdateAfterSend: () => { },
+    formatUsage: () => ({ current: 0, limit: 999999, remaining: 999999, percentage: 0 }),
+    hideUpgradePrompt: () => { },
+  } as any;
 }
 
 // Hook for checking usage before sending messages
@@ -305,7 +310,7 @@ export function useMessageGuard() {
 
   const guardedSendMessage = useCallback(async (sendFunction: () => Promise<void> | void) => {
     const canSend = await checkCanSendMessage();
-    
+
     if (canSend) {
       await sendFunction();
       // Update UI optimistically right after sending
