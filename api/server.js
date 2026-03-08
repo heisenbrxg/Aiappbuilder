@@ -54,13 +54,8 @@ export default async function handler(req, res) {
 
     let body = undefined;
     if (req.method !== 'GET' && req.method !== 'HEAD') {
-      body = new ReadableStream({
-        start(controller) {
-          req.on('data', (chunk) => controller.enqueue(chunk));
-          req.on('end', () => controller.close());
-          req.on('error', (err) => controller.error(err));
-        },
-      });
+      const { Readable } = require('stream');
+      body = Readable.toWeb(req);
     }
 
     const webRequest = new Request(url.toString(), {
