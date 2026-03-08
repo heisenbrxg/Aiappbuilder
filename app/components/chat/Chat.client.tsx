@@ -47,7 +47,7 @@ export function Chat({ projects, hasMore, totalProjects }: { projects: Project[]
 
   const { ready, initialMessages, storeMessageHistory, importChat, exportChat } = useChatHistory();
   const title = useStore(description);
-  
+
   useEffect(() => {
     workbenchStore.setReloadedMessages(initialMessages.map((m) => m.id));
   }, [initialMessages]);
@@ -193,13 +193,13 @@ export const ChatImpl = memo(
           action: 'request',
           error: e.message,
         });
-        
+
         // Silence specific validation errors that are not user-facing issues
-        const isValidationError = e.message?.includes('Type validation failed') && 
-                                 e.message?.includes('candidates') && 
-                                 e.message?.includes('content') && 
-                                 e.message?.includes('parts');
-        
+        const isValidationError = e.message?.includes('Type validation failed') &&
+          e.message?.includes('candidates') &&
+          e.message?.includes('content') &&
+          e.message?.includes('parts');
+
         if (!isValidationError) {
           toast.error(
             'There was an error processing your request: ' + (e.message ? e.message : 'No details were returned'),
@@ -417,13 +417,6 @@ export const ChatImpl = memo(
     };
 
     const sendMessage = async (_event: React.UIEvent, messageInput?: string) => {
-      // Ensure user can still send messages before proceeding (handles freshly exceeded limits)
-      const canSend = await checkCanSendMessage();
-      if (!canSend) {
-        setShowPricingModal(true);
-        return;
-      }
-
       await guardedSendMessage(async () => {
         const messageContent = messageInput || input;
 
@@ -436,157 +429,157 @@ export const ChatImpl = memo(
           return;
         }
 
-      let finalMessageContent = messageContent;
+        let finalMessageContent = messageContent;
 
-      if (selectedElement) {
-        console.log('Selected Element:', selectedElement);
+        if (selectedElement) {
+          console.log('Selected Element:', selectedElement);
 
-        const elementInfo = `<div class=\"__boltSelectedElement__\" data-element='${JSON.stringify(selectedElement)}'>${JSON.stringify(`${selectedElement.displayText}`)}</div>`;
-        finalMessageContent = finalMessageContent + elementInfo;
-      }
-
-      runAnimation();
-
-      if (!chatStarted) {
-        setFakeLoading(true);
-
-        if (autoSelectTemplate) {
-          const { template, title } = await selectStarterTemplate({
-            message: finalMessageContent,
-            model,
-            provider,
-          });
-
-          if (template !== 'blank') {
-            const temResp = await getTemplates(template, title).catch((e) => {
-              if (e.message.includes('rate limit')) {
-                toast.warning('Rate limit exceeded. Skipping starter template\n Continuing with blank template');
-              } else {
-                toast.warning('Failed to import starter template\n Continuing with blank template');
-              }
-
-              return null;
-            });
-
-            if (temResp) {
-              const { assistantMessage, userMessage } = temResp;
-              const userMessageText = `[Model: ${model}]\n\n[Provider: ${provider.name}]\n\n${finalMessageContent}`;
-              const attachments = uploadedFiles.length > 0 ? await filesToAttachments(uploadedFiles) : undefined;
-              
-              setMessages([
-                {
-                  id: `1-${new Date().getTime()}`,
-                  role: 'user',
-                  content: userMessageText,
-                  parts: createMessageParts(userMessageText, imageDataList),
-                  experimental_attachments: attachments,
-                },
-                {
-                  id: `2-${new Date().getTime()}`,
-                  role: 'assistant',
-                  content: assistantMessage,
-                },
-                {
-                  id: `3-${new Date().getTime()}`,
-                  role: 'user',
-                  content: `[Model: ${model}]\n\n[Provider: ${provider.name}]\n\n${userMessage}`,
-                  annotations: ['hidden'],
-                },
-              ]);
-
-              const reloadOptions = attachments ? { experimental_attachments: attachments } : undefined;
-
-              reload(reloadOptions);
-              setInput('');
-              Cookies.remove(PROMPT_COOKIE_KEY);
-
-              setUploadedFiles([]);
-              setImageDataList([]);
-
-              resetEnhancer();
-
-              textareaRef.current?.blur();
-              setFakeLoading(false);
-
-              return;
-            }
-          }
+          const elementInfo = `<div class=\"__boltSelectedElement__\" data-element='${JSON.stringify(selectedElement)}'>${JSON.stringify(`${selectedElement.displayText}`)}</div>`;
+          finalMessageContent = finalMessageContent + elementInfo;
         }
 
-        // If autoSelectTemplate is disabled or template selection failed, proceed with normal message
-        const userMessageText = `[Model: ${model}]\n\n[Provider: ${provider.name}]\n\n${finalMessageContent}`;
-        const attachments = uploadedFiles.length > 0 ? await filesToAttachments(uploadedFiles) : undefined;
+        runAnimation();
 
-        setMessages([
-          {
-            id: `${new Date().getTime()}`,
-            role: 'user',
-            content: userMessageText,
-            parts: createMessageParts(userMessageText, imageDataList),
-            experimental_attachments: attachments,
-          },
-        ]);
-        reload(attachments ? { experimental_attachments: attachments } : undefined);
-        setFakeLoading(false);
+        if (!chatStarted) {
+          setFakeLoading(true);
+
+          if (autoSelectTemplate) {
+            const { template, title } = await selectStarterTemplate({
+              message: finalMessageContent,
+              model,
+              provider,
+            });
+
+            if (template !== 'blank') {
+              const temResp = await getTemplates(template, title).catch((e) => {
+                if (e.message.includes('rate limit')) {
+                  toast.warning('Rate limit exceeded. Skipping starter template\n Continuing with blank template');
+                } else {
+                  toast.warning('Failed to import starter template\n Continuing with blank template');
+                }
+
+                return null;
+              });
+
+              if (temResp) {
+                const { assistantMessage, userMessage } = temResp;
+                const userMessageText = `[Model: ${model}]\n\n[Provider: ${provider.name}]\n\n${finalMessageContent}`;
+                const attachments = uploadedFiles.length > 0 ? await filesToAttachments(uploadedFiles) : undefined;
+
+                setMessages([
+                  {
+                    id: `1-${new Date().getTime()}`,
+                    role: 'user',
+                    content: userMessageText,
+                    parts: createMessageParts(userMessageText, imageDataList),
+                    experimental_attachments: attachments,
+                  },
+                  {
+                    id: `2-${new Date().getTime()}`,
+                    role: 'assistant',
+                    content: assistantMessage,
+                  },
+                  {
+                    id: `3-${new Date().getTime()}`,
+                    role: 'user',
+                    content: `[Model: ${model}]\n\n[Provider: ${provider.name}]\n\n${userMessage}`,
+                    annotations: ['hidden'],
+                  },
+                ]);
+
+                const reloadOptions = attachments ? { experimental_attachments: attachments } : undefined;
+
+                reload(reloadOptions);
+                setInput('');
+                Cookies.remove(PROMPT_COOKIE_KEY);
+
+                setUploadedFiles([]);
+                setImageDataList([]);
+
+                resetEnhancer();
+
+                textareaRef.current?.blur();
+                setFakeLoading(false);
+
+                return;
+              }
+            }
+          }
+
+          // If autoSelectTemplate is disabled or template selection failed, proceed with normal message
+          const userMessageText = `[Model: ${model}]\n\n[Provider: ${provider.name}]\n\n${finalMessageContent}`;
+          const attachments = uploadedFiles.length > 0 ? await filesToAttachments(uploadedFiles) : undefined;
+
+          setMessages([
+            {
+              id: `${new Date().getTime()}`,
+              role: 'user',
+              content: userMessageText,
+              parts: createMessageParts(userMessageText, imageDataList),
+              experimental_attachments: attachments,
+            },
+          ]);
+          reload(attachments ? { experimental_attachments: attachments } : undefined);
+          setFakeLoading(false);
+          setInput('');
+          Cookies.remove(PROMPT_COOKIE_KEY);
+
+          setUploadedFiles([]);
+          setImageDataList([]);
+
+          resetEnhancer();
+
+          textareaRef.current?.blur();
+
+          return;
+        }
+
+        if (error != null) {
+          setMessages(messages.slice(0, -1));
+        }
+
+        const modifiedFiles = workbenchStore.getModifiedFiles();
+
+        chatStore.setKey('aborted', false);
+
+        if (modifiedFiles !== undefined) {
+          const userUpdateArtifact = filesToArtifacts(modifiedFiles, `${Date.now()}`);
+          const messageText = `[Model: ${model}]\n\n[Provider: ${provider.name}]\n\n${userUpdateArtifact}${finalMessageContent}`;
+
+          const attachmentOptions =
+            uploadedFiles.length > 0 ? { experimental_attachments: await filesToAttachments(uploadedFiles) } : undefined;
+
+          append(
+            {
+              role: 'user',
+              content: messageText,
+              parts: createMessageParts(messageText, imageDataList),
+            },
+            attachmentOptions,
+          );
+
+          workbenchStore.resetAllFileModifications();
+        } else {
+          const messageText = `[Model: ${model}]\n\n[Provider: ${provider.name}]\n\n${finalMessageContent}`;
+
+          const attachmentOptions =
+            uploadedFiles.length > 0 ? { experimental_attachments: await filesToAttachments(uploadedFiles) } : undefined;
+
+          append(
+            {
+              role: 'user',
+              content: messageText,
+              parts: createMessageParts(messageText, imageDataList),
+            },
+            attachmentOptions,
+          );
+        }
+
         setInput('');
         Cookies.remove(PROMPT_COOKIE_KEY);
 
         setUploadedFiles([]);
         setImageDataList([]);
-
-        resetEnhancer();
-
-        textareaRef.current?.blur();
-
-        return;
-      }
-
-      if (error != null) {
-        setMessages(messages.slice(0, -1));
-      }
-
-      const modifiedFiles = workbenchStore.getModifiedFiles();
-
-      chatStore.setKey('aborted', false);
-
-      if (modifiedFiles !== undefined) {
-        const userUpdateArtifact = filesToArtifacts(modifiedFiles, `${Date.now()}`);
-        const messageText = `[Model: ${model}]\n\n[Provider: ${provider.name}]\n\n${userUpdateArtifact}${finalMessageContent}`;
-
-        const attachmentOptions =
-          uploadedFiles.length > 0 ? { experimental_attachments: await filesToAttachments(uploadedFiles) } : undefined;
-
-        append(
-          {
-            role: 'user',
-            content: messageText,
-            parts: createMessageParts(messageText, imageDataList),
-          },
-          attachmentOptions,
-        );
-
-        workbenchStore.resetAllFileModifications();
-      } else {
-        const messageText = `[Model: ${model}]\n\n[Provider: ${provider.name}]\n\n${finalMessageContent}`;
-
-        const attachmentOptions =
-          uploadedFiles.length > 0 ? { experimental_attachments: await filesToAttachments(uploadedFiles) } : undefined;
-
-        append(
-          {
-            role: 'user',
-            content: messageText,
-            parts: createMessageParts(messageText, imageDataList),
-          },
-          attachmentOptions,
-        );
-      }
-
-      setInput('');
-      Cookies.remove(PROMPT_COOKIE_KEY);
-
-      setUploadedFiles([]);
-      setImageDataList([]);
 
         resetEnhancer();
 
