@@ -1,7 +1,7 @@
 {
     "buildCommand": "pnpm run build",
     "outputDirectory": "build/client",
-    "installCommand": "HUSKY=0 pnpm install",
+    "installCommand": "NODE_ENV=development HUSKY=0 pnpm install",
     "framework": null,
     "functions": {
         "api/server.js": {
