@@ -1,0 +1,21 @@
+// =================================================================
+// TEMPORARY BLOCK: All @use rules extracted from SCSS files
+// =================================================================
+// 
+// Original order preserved from source files:
+// - app/styles/components/resize-handle.scss (line 1)
+// - app/styles/index.scss (lines 1, 2, 3, 8, 9, 10, 11, 12)
+//
+
+// From app/styles/components/resize-handle.scss
+@use '../z-index';
+
+// From app/styles/index.scss
+@use 'variables.scss';
+@use 'z-index.scss';
+@use 'animations.scss';
+@use 'components/terminal.scss';
+@use 'components/resize-handle.scss';
+@use 'components/code.scss';
+@use 'components/editor.scss';
+@use 'components/toast.scss';

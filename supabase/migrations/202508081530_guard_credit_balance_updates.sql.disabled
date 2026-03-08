@@ -1,0 +1,66 @@
+-- 202508081530_guard_credit_balance_updates.sql
+-- Protect credit_balances from accidental overwrites and ensure only increment_credits() can mutate it
+
+-- 1) Protective trigger function
+create or replace function public.protect_credit_balances_fn()
+returns trigger
+language plpgsql
+as $$
+begin
+  -- Allow updates/inserts only when explicitly permitted in-session
+  if current_setting('app.allow_credit_update', true) is distinct from '1' then
+    raise exception 'Direct modification to credit_balances is not allowed (use increment_credits)';
+  end if;
+  return NEW;
+end;
+$$;
+
+-- 2) Triggers for INSERT and UPDATE
+DROP TRIGGER IF EXISTS protect_credit_balances_update ON public.credit_balances;
+CREATE TRIGGER protect_credit_balances_update
+BEFORE UPDATE ON public.credit_balances
+FOR EACH ROW EXECUTE FUNCTION public.protect_credit_balances_fn();
+
+DROP TRIGGER IF EXISTS protect_credit_balances_insert ON public.credit_balances;
+CREATE TRIGGER protect_credit_balances_insert
+BEFORE INSERT ON public.credit_balances
+FOR EACH ROW EXECUTE FUNCTION public.protect_credit_balances_fn();
+
+-- 3) Wrap increment_credits with session flag so it can mutate safely
+create or replace function public.increment_credits(
+  p_user_id uuid,
+  p_delta int,
+  p_transaction_type text default 'manual_adjustment',
+  p_reference_id text default null,
+  p_notes text default null
+)
+returns void language plpgsql security definer as $$
+declare
+  old_balance integer := 0;
+  new_balance integer := 0;
+begin
+  -- Mark this session as allowed to modify credit_balances
+  perform set_config('app.allow_credit_update', '1', true);
+
+  -- Get current balance
+  select credits into old_balance from public.credit_balances where user_id = p_user_id;
+  if old_balance is null then old_balance := 0; end if;
+
+  -- Calculate new balance (prevent negative balances)
+  new_balance := old_balance + greatest(p_delta, -old_balance);
+
+  -- Upsert to exact new_balance to avoid race conditions
+  insert into public.credit_balances(user_id, credits)
+    values (p_user_id, new_balance)
+  on conflict (user_id) do
+    update set credits = excluded.credits,
+               updated_at = now();
+
+  -- Log the transaction
+  insert into public.credit_transactions(user_id, transaction_type, amount_delta, balance_before, balance_after, reference_id, notes)
+  values (p_user_id, p_transaction_type, p_delta, old_balance, new_balance, p_reference_id, p_notes);
+
+  -- Unset the flag (best-effort)
+  perform set_config('app.allow_credit_update', null, true);
+end;
+$$;

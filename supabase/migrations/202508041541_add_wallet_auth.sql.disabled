@@ -1,0 +1,11 @@
+-- Adds wallet-based authentication support
+-- Creates wallet_nonces table and adds wallet_address column to users table
+
+create table if not exists wallet_nonces (
+  address text primary key,
+  nonce text not null,
+  created_at timestamptz default now()
+);
+
+alter table if exists users
+  add column if not exists wallet_address text unique;

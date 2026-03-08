@@ -1,0 +1,194 @@
+-- 202508052340_protect_crypto_credits.sql
+-- Adds additional safeguards to ensure crypto credits are never lost when users subscribe to Stripe plans
+-- Also adds logging and debugging capabilities to track credit changes
+
+-- 1. Create a credit_transactions table to log all credit changes for debugging
+create table if not exists public.credit_transactions (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users(id) on delete cascade,
+  transaction_type text not null check (transaction_type in ('crypto_purchase', 'stripe_subscription', 'manual_adjustment', 'system_correction')),
+  amount_delta integer not null, -- positive for additions, negative for deductions
+  balance_before integer not null,
+  balance_after integer not null,
+  reference_id text, -- order_id, subscription_id, etc.
+  notes text,
+  created_at timestamp with time zone default now()
+);
+
+-- Enable RLS
+alter table public.credit_transactions enable row level security;
+
+-- RLS policies for credit_transactions
+create policy "Users can view their own credit transactions"
+  on public.credit_transactions for select
+  using (auth.uid() = user_id);
+
+-- Service role can manage all transactions
+create policy "Service role can manage credit transactions"
+  on public.credit_transactions for all
+  using (auth.role() = 'service_role');
+
+-- 2. Enhanced increment_credits function with transaction logging
+create or replace function public.increment_credits(p_user_id uuid, p_delta int, p_transaction_type text default 'manual_adjustment', p_reference_id text default null, p_notes text default null)
+returns void language plpgsql security definer as $$
+declare
+  old_balance integer := 0;
+  new_balance integer := 0;
+begin
+  -- Get current balance
+  select credits into old_balance
+  from public.credit_balances
+  where user_id = p_user_id;
+  
+  if old_balance is null then
+    old_balance := 0;
+  end if;
+  
+  -- Calculate new balance (prevent negative balances)
+  new_balance := old_balance + greatest(p_delta, -old_balance);
+  
+  -- Update or insert credit balance
+  insert into public.credit_balances(user_id, credits)
+    values (p_user_id, new_balance)
+  on conflict (user_id) do
+    update set credits = new_balance,
+               updated_at = now();
+  
+  -- Log the transaction
+  insert into public.credit_transactions(user_id, transaction_type, amount_delta, balance_before, balance_after, reference_id, notes)
+  values (p_user_id, p_transaction_type, p_delta, old_balance, new_balance, p_reference_id, p_notes);
+  
+  -- Log for debugging
+  raise notice 'Credit transaction: user_id=%, type=%, delta=%, balance: % -> %', p_user_id, p_transaction_type, p_delta, old_balance, new_balance;
+end;
+$$;
+
+-- 3. Function to get detailed credit breakdown for debugging
+create or replace function public.get_credit_breakdown(user_uuid uuid)
+returns table(
+  stripe_plan_limit integer,
+  crypto_credits integer,
+  total_limit integer,
+  current_usage integer,
+  remaining_credits integer
+) as $$
+declare
+  plan_limit integer := 0;
+  prepaid_credits integer := 0;
+  billing_period record;
+  current_messages integer := 0;
+begin
+  -- Get billing period
+  select * into billing_period from get_current_billing_period(user_uuid);
+  
+  -- Get Stripe plan limit
+  select sp.message_limit into plan_limit
+  from user_subscriptions us
+  join subscription_plans sp on us.plan_id = sp.id
+  where us.user_id = user_uuid and us.status = 'active';
+  
+  if plan_limit is null then
+    plan_limit := 5; -- free tier default
+  end if;
+  
+  -- Get crypto credits
+  select credits into prepaid_credits
+  from credit_balances
+  where user_id = user_uuid;
+  
+  if prepaid_credits is null then
+    prepaid_credits := 0;
+  end if;
+  
+  -- Get current usage
+  select coalesce(sum(case when mu.message_type = 'user' then mu.message_count else 0 end), 0)
+  into current_messages
+  from message_usage mu
+  where mu.user_id = user_uuid
+    and mu.billing_period_start = billing_period.period_start
+    and mu.billing_period_end = billing_period.period_end;
+  
+  return query select
+    plan_limit as stripe_plan_limit,
+    prepaid_credits as crypto_credits,
+    (plan_limit + prepaid_credits) as total_limit,
+    current_messages as current_usage,
+    (plan_limit + prepaid_credits - current_messages) as remaining_credits;
+end;
+$$ language plpgsql security definer;
+
+-- 4. Enhanced get_user_usage function with better error handling and logging
+create or replace function public.get_user_usage(user_uuid uuid)
+returns table(
+  total_messages bigint,
+  user_messages bigint,
+  assistant_messages bigint,
+  message_limit integer,
+  usage_percentage numeric
+) as $$
+declare
+  billing_period   record;
+  plan_limit       integer := 0;
+  prepaid_credits  integer := 0;
+  total_limit      integer := 0;
+begin
+  -- 1) Determine current billing period
+  select * into billing_period from get_current_billing_period(user_uuid);
+  
+  if billing_period is null then
+    raise exception 'Could not determine billing period for user %', user_uuid;
+  end if;
+
+  -- 2) Base limit from active plan (Stripe or free tier)
+  select sp.message_limit into plan_limit
+  from user_subscriptions us
+  join subscription_plans sp on us.plan_id = sp.id
+  where us.user_id = user_uuid and us.status = 'active';
+
+  if plan_limit is null then
+    plan_limit := 5;  -- free-tier default
+    raise notice 'User % has no active subscription, using free tier limit of %', user_uuid, plan_limit;
+  else
+    raise notice 'User % has active subscription with plan limit of %', user_uuid, plan_limit;
+  end if;
+
+  -- 3) Add any prepaid credits purchased via crypto top-ups
+  select credits into prepaid_credits
+  from credit_balances
+  where user_id = user_uuid;
+
+  if prepaid_credits is null then
+    prepaid_credits := 0;
+  end if;
+  
+  raise notice 'User % has % crypto credits', user_uuid, prepaid_credits;
+
+  total_limit := plan_limit + prepaid_credits;
+  
+  raise notice 'User % total limit: % (plan: % + crypto: %)', user_uuid, total_limit, plan_limit, prepaid_credits;
+
+  -- 4) Return usage stats
+  return query
+  select
+    coalesce(sum(case when mu.message_type = 'user' then mu.message_count else 0 end), 0) as total_messages,
+    coalesce(sum(case when mu.message_type = 'user' then mu.message_count else 0 end), 0) as user_messages,
+    coalesce(sum(case when mu.message_type = 'assistant' then mu.message_count else 0 end), 0) as assistant_messages,
+    total_limit as message_limit,
+    round(
+      case 
+        when total_limit > 0 then
+          (coalesce(sum(case when mu.message_type = 'user' then mu.message_count else 0 end), 0)::numeric / total_limit::numeric) * 100
+        else 0
+      end, 2
+    ) as usage_percentage
+  from message_usage mu
+  where mu.user_id = user_uuid
+    and mu.billing_period_start = billing_period.period_start
+    and mu.billing_period_end   = billing_period.period_end;
+end;
+$$ language plpgsql security definer;
+
+-- 5. Create indexes for better performance
+create index if not exists idx_credit_transactions_user_id on public.credit_transactions(user_id);
+create index if not exists idx_credit_transactions_created_at on public.credit_transactions(created_at);
+create index if not exists idx_credit_transactions_type on public.credit_transactions(transaction_type);

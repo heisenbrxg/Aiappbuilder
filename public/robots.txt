@@ -1,0 +1,18 @@
+# Starsky robots.txt
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /auth/
+Disallow: /webcontainer/
+
+# Allow images to be indexed
+User-agent: Googlebot-Image
+Allow: /public/images/
+Allow: /icons/
+
+# Crawl delay for bots
+User-agent: *
+Crawl-delay: 10
+
+# Sitemaps
+Sitemap: https://sharelock.cc/sitemap.xml

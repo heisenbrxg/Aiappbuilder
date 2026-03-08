@@ -1,0 +1,63 @@
+-- 202508081355_update_usage_for_crypto_plan.sql
+-- Patch get_user_usage to handle the new 'crypto' plan exactly like 'credits'.
+
+create or replace function public.get_user_usage(user_uuid uuid)
+returns table(
+  total_messages bigint,
+  user_messages bigint,
+  assistant_messages bigint,
+  message_limit integer,
+  usage_percentage numeric
+) as $$
+declare
+  billing_period   record;
+  plan_limit       integer := 0;
+  prepaid_credits  integer := 0;
+  user_plan_id     text;
+begin
+  -- 1) Determine current billing period
+  select * into billing_period from get_current_billing_period(user_uuid);
+  if billing_period is null then
+    raise exception 'Could not determine billing period for user %', user_uuid;
+  end if;
+
+  -- 2) Get user's current plan
+  select us.plan_id into user_plan_id
+  from user_subscriptions us
+  where us.user_id = user_uuid and us.status = 'active';
+
+  -- 3) Handle plan types
+  if user_plan_id in ('credits','crypto') then
+    plan_limit := 0; -- usage purely from credits
+  else
+    select sp.message_limit into plan_limit
+    from user_subscriptions us
+    join subscription_plans sp on us.plan_id = sp.id
+    where us.user_id = user_uuid and us.status = 'active';
+
+    if plan_limit is null then
+      plan_limit := 5; -- free tier
+    end if;
+  end if;
+
+  -- 4) Prepaid credits
+  select credits into prepaid_credits
+  from credit_balances where user_id = user_uuid;
+  if prepaid_credits is null then prepaid_credits := 0; end if;
+
+  plan_limit := plan_limit + prepaid_credits;
+
+  -- 5) Return usage stats
+  return query
+  select
+    coalesce(sum(case when mu.message_type = 'user' then mu.message_count else 0 end),0),
+    coalesce(sum(case when mu.message_type = 'user' then mu.message_count else 0 end),0),
+    coalesce(sum(case when mu.message_type = 'assistant' then mu.message_count else 0 end),0),
+    plan_limit,
+    round( case when plan_limit>0 then (coalesce(sum(case when mu.message_type='user' then mu.message_count else 0 end),0)::numeric / plan_limit)*100 else 0 end ,2)
+  from message_usage mu
+  where mu.user_id = user_uuid
+    and mu.billing_period_start = billing_period.period_start
+    and mu.billing_period_end = billing_period.period_end;
+end;
+$$ language plpgsql security definer;

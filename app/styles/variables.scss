@@ -1,0 +1,255 @@
+/* Color Tokens Light Theme */
+:root,
+:root[data-theme='light'] {
+  --monzed-elements-borderColor: theme('colors.alpha.gray.10');
+  --monzed-elements-borderColorActive: theme('colors.accent.600');
+
+  --monzed-elements-bg-depth-1: theme('colors.white');
+  --monzed-elements-bg-depth-2: theme('colors.gray.50');
+  --monzed-elements-bg-depth-3: theme('colors.gray.200');
+  --monzed-elements-bg-depth-4: theme('colors.alpha.gray.5');
+
+  --monzed-elements-textPrimary: theme('colors.gray.950');
+  --monzed-elements-textSecondary: theme('colors.gray.600');
+  --monzed-elements-textTertiary: theme('colors.gray.500');
+
+  --monzed-elements-code-background: theme('colors.gray.100');
+  --monzed-elements-code-text: theme('colors.gray.950');
+
+  --monzed-elements-button-primary-background: theme('colors.alpha.accent.10');
+  --monzed-elements-button-primary-backgroundHover: theme('colors.alpha.accent.20');
+  --monzed-elements-button-primary-text: theme('colors.accent.500');
+
+  --monzed-elements-button-secondary-background: theme('colors.alpha.gray.5');
+  --monzed-elements-button-secondary-backgroundHover: theme('colors.alpha.gray.10');
+  --monzed-elements-button-secondary-text: theme('colors.gray.950');
+
+  --monzed-elements-button-danger-background: rgba(96, 165, 250, 0.1); /* Blue alpha */
+  --monzed-elements-button-danger-backgroundHover: rgba(96, 165, 250, 0.2); /* Blue alpha hover */
+  --monzed-elements-button-danger-text: #FD9641; /* Blue */
+
+  --monzed-elements-item-contentDefault: theme('colors.alpha.gray.50');
+  --monzed-elements-item-contentActive: theme('colors.gray.950');
+  --monzed-elements-item-contentAccent: theme('colors.accent.700');
+  --monzed-elements-item-contentDanger: #FD9641; /* Blue */
+  --monzed-elements-item-backgroundDefault: rgba(0, 0, 0, 0);
+  --monzed-elements-item-backgroundActive: theme('colors.alpha.gray.5');
+  --monzed-elements-item-backgroundAccent: theme('colors.alpha.accent.10');
+  --monzed-elements-item-backgroundDanger: rgba(96, 165, 250, 0.1); /* Blue alpha */
+
+  --monzed-elements-loader-background: theme('colors.alpha.gray.10');
+  --monzed-elements-loader-progress: theme('colors.accent.500');
+
+  --monzed-elements-artifacts-background: theme('colors.white');
+  --monzed-elements-artifacts-backgroundHover: theme('colors.alpha.gray.2');
+  --monzed-elements-artifacts-borderColor: var(--monzed-elements-borderColor);
+  --monzed-elements-artifacts-inlineCode-background: theme('colors.gray.100');
+  --monzed-elements-artifacts-inlineCode-text: var(--monzed-elements-textPrimary);
+
+  --monzed-elements-actions-background: theme('colors.white');
+  --monzed-elements-actions-code-background: theme('colors.gray.100');
+
+  --monzed-elements-messages-background: theme('colors.gray.100');
+  --monzed-elements-messages-linkColor: theme('colors.accent.500');
+  --monzed-elements-messages-code-background: theme('colors.gray.100');
+  --monzed-elements-messages-inlineCode-background: theme('colors.gray.200');
+  --monzed-elements-messages-inlineCode-text: theme('colors.gray.800');
+
+  --monzed-elements-icon-success: theme('colors.green.500');
+  --monzed-elements-icon-error: #FD9641; /* Blue */
+  --monzed-elements-icon-primary: theme('colors.gray.950');
+  --monzed-elements-icon-secondary: theme('colors.gray.600');
+  --monzed-elements-icon-tertiary: theme('colors.gray.500');
+
+  --monzed-elements-dividerColor: theme('colors.gray.100');
+
+  --monzed-elements-prompt-background: theme('colors.alpha.white.80');
+
+  --monzed-elements-sidebar-dropdownShadow: theme('colors.alpha.gray.10');
+  --monzed-elements-sidebar-buttonBackgroundDefault: theme('colors.alpha.accent.10');
+  --monzed-elements-sidebar-buttonBackgroundHover: theme('colors.alpha.accent.20');
+  --monzed-elements-sidebar-buttonText: theme('colors.accent.700');
+
+  --monzed-elements-preview-addressBar-background: theme('colors.gray.100');
+  --monzed-elements-preview-addressBar-backgroundHover: theme('colors.alpha.gray.5');
+  --monzed-elements-preview-addressBar-backgroundActive: theme('colors.white');
+  --monzed-elements-preview-addressBar-text: var(--monzed-elements-textSecondary);
+  --monzed-elements-preview-addressBar-textActive: var(--monzed-elements-textPrimary);
+
+  --monzed-elements-terminals-background: theme('colors.white');
+  --monzed-elements-terminals-buttonBackground: var(--monzed-elements-bg-depth-4);
+
+  --monzed-elements-cta-background: theme('colors.gray.100');
+  --monzed-elements-cta-text: theme('colors.gray.950');
+
+  /* Terminal Colors */
+  --monzed-terminal-background: var(--monzed-elements-terminals-background);
+  --monzed-terminal-foreground: #333333;
+  --monzed-terminal-selection-background: #00000040;
+  --monzed-terminal-black: #000000;
+  --monzed-terminal-red: #cd3131;
+  --monzed-terminal-green: #00bc00;
+  --monzed-terminal-yellow: #949800;
+  --monzed-terminal-blue: #0451a5;
+  --monzed-terminal-magenta: #bc05bc;
+  --monzed-terminal-cyan: #0598bc;
+  --monzed-terminal-white: #555555;
+  --monzed-terminal-brightBlack: #686868;
+  --monzed-terminal-brightRed: #cd3131;
+  --monzed-terminal-brightGreen: #00bc00;
+  --monzed-terminal-brightYellow: #949800;
+  --monzed-terminal-brightBlue: #0451a5;
+  --monzed-terminal-brightMagenta: #bc05bc;
+  --monzed-terminal-brightCyan: #0598bc;
+  --monzed-terminal-brightWhite: #a5a5a5;
+  --modern-scrollbar-thumb-background: rgba(0, 0, 0, 0.15); // Light theme - subtle dark thumb
+  --modern-scrollbar-thumb-backgroundHover: rgba(0, 0, 0, 0.25); // Light theme - more visible on hover
+}
+
+/* Color Tokens Dark Theme */
+:root,
+:root[data-theme='dark'] {
+  --monzed-elements-borderColor: #1A1A1A; /* Starsky border color */
+  --monzed-elements-borderColorActive: #FC7C11; /* monzed accent */
+
+  --monzed-elements-bg-depth-1: #1E1E21; /* Dark background - Starsky primary */
+  --monzed-elements-bg-depth-2: #252528; /* Starsky secondary */
+  --monzed-elements-bg-depth-3: #2C2C2F; /* Starsky tertiary */
+  --monzed-elements-bg-depth-4: theme('colors.alpha.white.5');
+
+  --monzed-elements-textPrimary: #FFFFFF; /* Starsky primary text */
+  --monzed-elements-textSecondary: #A3A3A3; /* Starsky secondary text */
+  --monzed-elements-textTertiary: #525252; /* Starsky tertiary text */
+
+  --monzed-elements-code-background: theme('colors.gray.800');
+  --monzed-elements-code-text: theme('colors.white');
+
+  --monzed-elements-button-primary-background: rgba(0, 17, 255, 0.1); /* Blue accent alpha */
+  --monzed-elements-button-primary-backgroundHover: rgba(0, 17, 255, 0.2); /* Blue accent alpha hover */
+  --monzed-elements-button-primary-text: #FC7C11; /* Blue accent */
+
+  --monzed-elements-button-secondary-background: theme('colors.alpha.white.5');
+  --monzed-elements-button-secondary-backgroundHover: theme('colors.alpha.white.10');
+  --monzed-elements-button-secondary-text: theme('colors.white');
+
+  --monzed-elements-button-danger-background: rgba(96, 165, 250, 0.1); /* Blue alpha */
+  --monzed-elements-button-danger-backgroundHover: rgba(96, 165, 250, 0.2); /* Blue alpha hover */
+  --monzed-elements-button-danger-text: #FD9641; /* Blue */
+
+  --monzed-elements-item-contentDefault: theme('colors.alpha.white.50');
+  --monzed-elements-item-contentActive: theme('colors.white');
+  --monzed-elements-item-contentAccent: theme('colors.accent.500');
+  --monzed-elements-item-contentDanger: #FD9641; /* Blue */
+  --monzed-elements-item-backgroundDefault: rgba(255, 255, 255, 0);
+  --monzed-elements-item-backgroundActive: theme('colors.alpha.white.10');
+  --monzed-elements-item-backgroundAccent: theme('colors.alpha.accent.10');
+  --monzed-elements-item-backgroundDanger: rgba(96, 165, 250, 0.1); /* Blue alpha */
+
+  --monzed-elements-loader-background: theme('colors.alpha.gray.10');
+  --monzed-elements-loader-progress: theme('colors.accent.500');
+
+  --monzed-elements-artifacts-background: theme('colors.gray.900');
+  --monzed-elements-artifacts-backgroundHover: theme('colors.alpha.white.5');
+  --monzed-elements-artifacts-borderColor: var(--monzed-elements-borderColor);
+  --monzed-elements-artifacts-inlineCode-background: theme('colors.gray.800');
+  --monzed-elements-artifacts-inlineCode-text: theme('colors.white');
+
+  --monzed-elements-actions-background: theme('colors.gray.900');
+  --monzed-elements-actions-code-background: #1a1a1a;
+
+  --monzed-elements-messages-background: theme('colors.gray.800');
+  --monzed-elements-messages-linkColor: theme('colors.accent.500');
+  --monzed-elements-messages-code-background: #1a1a1a;
+  --monzed-elements-messages-inlineCode-background: theme('colors.gray.700');
+  --monzed-elements-messages-inlineCode-text: var(--monzed-elements-textPrimary);
+
+  --monzed-elements-icon-success: theme('colors.green.400');
+  --monzed-elements-icon-error: #FDB070; /* Light blue for dark theme */
+  --monzed-elements-icon-primary: #FFFFFF; /* Starsky primary text */
+  --monzed-elements-icon-secondary: #A3A3A3; /* Starsky secondary text */
+  --monzed-elements-icon-tertiary: #525252; /* Starsky tertiary text */
+
+  --monzed-elements-dividerColor: #1A1A1A; /* Starsky border color */
+
+  --monzed-elements-prompt-background: theme('colors.alpha.gray.80');
+
+  --monzed-elements-sidebar-dropdownShadow: theme('colors.alpha.gray.30');
+  --monzed-elements-sidebar-buttonBackgroundDefault: theme('colors.alpha.accent.10');
+  --monzed-elements-sidebar-buttonBackgroundHover: theme('colors.alpha.accent.20');
+  --monzed-elements-sidebar-buttonText: theme('colors.accent.500');
+
+  --monzed-elements-preview-addressBar-background: var(--monzed-elements-bg-depth-1);
+  --monzed-elements-preview-addressBar-backgroundHover: theme('colors.alpha.white.5');
+  --monzed-elements-preview-addressBar-backgroundActive: var(--monzed-elements-bg-depth-1);
+  --monzed-elements-preview-addressBar-text: var(--monzed-elements-textSecondary);
+  --monzed-elements-preview-addressBar-textActive: var(--monzed-elements-textPrimary);
+
+  --monzed-elements-terminals-background: var(--monzed-elements-bg-depth-1);
+  --monzed-elements-terminals-buttonBackground: var(--monzed-elements-bg-depth-3);
+
+  --monzed-elements-cta-background: theme('colors.alpha.white.10');
+  --monzed-elements-cta-text: theme('colors.white');
+
+  /* Terminal Colors */
+  --monzed-terminal-background: var(--monzed-elements-terminals-background);
+  --monzed-terminal-foreground: #eff0eb;
+  --monzed-terminal-selection-background: #97979b33;
+  --monzed-terminal-black: #000000;
+  --monzed-terminal-red: #ff5c57;
+  --monzed-terminal-green: #5af78e;
+  --monzed-terminal-yellow: #f3f99d;
+  --monzed-terminal-blue: #57c7ff;
+  --monzed-terminal-magenta: #ff6ac1;
+  --monzed-terminal-cyan: #9aedfe;
+  --monzed-terminal-white: #f1f1f0;
+  --monzed-terminal-brightBlack: #686868;
+  --monzed-terminal-brightRed: #ff5c57;
+  --monzed-terminal-brightGreen: #5af78e;
+  --monzed-terminal-brightYellow: #f3f99d;
+  --monzed-terminal-brightBlue: #57c7ff;
+  --monzed-terminal-brightMagenta: #ff6ac1;
+  --monzed-terminal-brightCyan: #9aedfe;
+  --monzed-terminal-brightWhite: #f1f1f0;
+  --modern-scrollbar-thumb-background: rgba(255, 255, 255, 0.15); // Dark theme - subtle light thumb
+  --modern-scrollbar-thumb-backgroundHover: rgba(255, 255, 255, 0.25); // Dark theme - more visible on hover
+}
+
+/*
+ * Element Tokens
+ *
+ * Hierarchy: Element Token -> (Element Token | Color Tokens) -> Primitives
+ */
+:root {
+  --header-height: 60px;
+  --chat-max-width: 30rem;
+  --chat-min-width: 486px;
+  --workbench-width: min(calc(100% - var(--chat-min-width)), 2536px);
+  --workbench-inner-width: var(--workbench-width);
+  --workbench-left: calc(100% - var(--workbench-width));
+
+  /* Toasts */
+  --toastify-color-progress-success: var(--monzed-elements-icon-success);
+  --toastify-color-progress-error: var(--monzed-elements-icon-error);
+
+  /* Terminal */
+  --monzed-elements-terminal-backgroundColor: var(--monzed-terminal-background);
+  --monzed-elements-terminal-textColor: var(--monzed-terminal-foreground);
+  --monzed-elements-terminal-cursorColor: var(--monzed-terminal-foreground);
+  --monzed-elements-terminal-selection-backgroundColor: var(--monzed-terminal-selection-background);
+  --monzed-elements-terminal-color-black: var(--monzed-terminal-black);
+  --monzed-elements-terminal-color-red: var(--monzed-terminal-red);
+  --monzed-elements-terminal-color-green: var(--monzed-terminal-green);
+  --monzed-elements-terminal-color-yellow: var(--monzed-terminal-yellow);
+  --monzed-elements-terminal-color-blue: var(--monzed-terminal-blue);
+  --monzed-elements-terminal-color-magenta: var(--monzed-terminal-magenta);
+  --monzed-elements-terminal-color-cyan: var(--monzed-terminal-cyan);
+  --monzed-elements-terminal-color-white: var(--monzed-terminal-white);
+  --monzed-elements-terminal-color-brightBlack: var(--monzed-terminal-brightBlack);
+  --monzed-elements-terminal-color-brightRed: var(--monzed-terminal-brightRed);
+  --monzed-elements-terminal-color-brightGreen: var(--monzed-terminal-brightGreen);
+  --monzed-elements-terminal-color-brightYellow: var(--monzed-terminal-brightYellow);
+  --monzed-elements-terminal-color-brightBlue: var(--monzed-terminal-brightBlue);
+  --monzed-elements-terminal-color-brightMagenta: var(--monzed-terminal-brightMagenta);
+  --monzed-elements-terminal-color-brightCyan: var(--monzed-terminal-brightCyan);
+  --monzed-elements-terminal-color-brightWhite: var(--monzed-terminal-brightWhite);
+}

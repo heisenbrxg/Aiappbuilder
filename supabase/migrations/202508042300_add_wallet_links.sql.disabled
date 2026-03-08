@@ -1,0 +1,14 @@
+-- Adds wallet_links table to map users to wallet addresses without touching auth.users
+create table if not exists public.wallet_links (
+  user_id uuid not null references auth.users(id) on delete cascade,
+  wallet_address text not null,
+  linked_at timestamptz default now(),
+  constraint wallet_links_pkey primary key (user_id),
+  constraint wallet_links_wallet_unique unique (wallet_address)
+);
+
+alter table public.wallet_links enable row level security;
+
+-- Allow user to insert/update their own row
+create policy "Users can manage own wallet link" on public.wallet_links
+  for all using ( auth.uid() = user_id ) with check ( auth.uid() = user_id );

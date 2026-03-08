@@ -1,0 +1,41 @@
+$zIndexMax: 999;
+
+.z-logo {
+  z-index: $zIndexMax - 1;
+}
+
+.z-sidebar {
+  z-index: $zIndexMax - 2;
+}
+
+.z-port-dropdown {
+  z-index: $zIndexMax - 3;
+}
+
+.z-iframe-overlay {
+  z-index: $zIndexMax - 4;
+}
+
+.z-prompt {
+  z-index: 10;
+}
+
+.z-workbench {
+  z-index: 5;
+}
+
+.z-file-tree-breadcrumb {
+  z-index: $zIndexMax - 1;
+}
+
+.z-preview-header {
+  z-index: 20;
+}
+
+.z-preview-content {
+  z-index: 1;
+}
+
+.z-max {
+  z-index: $zIndexMax;
+}

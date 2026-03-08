@@ -1,0 +1,24 @@
+-- 202508081352_add_crypto_plan.sql
+-- Adds a dedicated "crypto" plan for users that solely purchase credits via crypto.
+-- This plan carries zero monthly message_limit so that usage is determined entirely by `credit_balances`,
+-- yet it can hold the same features set as the "pro" plan so features remain unlocked.
+
+insert into public.subscription_plans (id, name, description, price_cents, currency, message_limit, features, is_active)
+values (
+  'crypto',
+  'Crypto Credits',
+  'Pay-as-you-go via crypto. Unlimited access, messages drawn from prepaid credits.',
+  0,
+  'USD',
+  1,
+  '["Flexible credit usage","Pay-as-you-go","No monthly limit"]'::jsonb,
+  true
+)
+on conflict (id) do update set
+  name = excluded.name,
+  description = excluded.description,
+  features = excluded.features,
+  price_cents = excluded.price_cents,
+  message_limit = excluded.message_limit,
+  is_active = true,
+  updated_at = now();

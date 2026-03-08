@@ -1,0 +1,119 @@
+// Prism.js code block styling with monzed design system integration
+
+// Actions context - code blocks in action areas
+.actions pre[class*="language-"],
+.actions .prism-code {
+
+  color: var(--monzed-elements-code-text) !important;
+  border-radius: 6px;
+  padding: 1rem;
+  margin: 0.5rem 0;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+// Messages context - code blocks in chat messages
+pre[class*="language-"],
+.prism-code {
+  &:not(:has(.actions), .actions *) {
+    background-color: var(--monzed-elements-messages-code-background) !important;
+    color: var(--monzed-elements-code-text) !important;
+    border-radius: 6px;
+    padding: 1rem;
+    margin: 0.5rem 0;
+    overflow-x: auto;
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+}
+
+// Inline code styling
+code:not([class*="language-"]) {
+  background-color: var(--monzed-elements-messages-inlineCode-background);
+  color: var(--monzed-elements-messages-inlineCode-text);
+  padding: 0.125rem 0.25rem;
+  border-radius: 3px;
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+}
+
+// Artifacts context inline code
+.artifacts code:not([class*="language-"]) {
+  background-color: var(--monzed-elements-artifacts-inlineCode-background);
+  color: var(--monzed-elements-artifacts-inlineCode-text);
+}
+
+// Override default Prism theme colors to use monzed variables
+pre[class*="language-"] code,
+.prism-code {
+  // Ensure proper text color inheritance
+  color: inherit;
+  
+  // Token-specific styling that respects the monzed design system
+  .token.comment,
+  .token.prolog,
+  .token.doctype,
+  .token.cdata {
+    color: var(--monzed-elements-textTertiary);
+  }
+  
+  .token.punctuation {
+    color: var(--monzed-elements-textSecondary);
+  }
+  
+  .token.property,
+  .token.tag,
+  .token.boolean,
+  .token.number,
+  .token.constant,
+  .token.symbol,
+  .token.deleted {
+    color: var(--monzed-elements-textPrimary);
+  }
+  
+  .token.selector,
+  .token.attr-name,
+  .token.string,
+  .token.char,
+  .token.builtin,
+  .token.inserted {
+    color: var(--monzed-elements-textPrimary);
+  }
+  
+  .token.operator,
+  .token.entity,
+  .token.url,
+  .language-css .token.string,
+  .style .token.string {
+    color: var(--monzed-elements-textSecondary);
+  }
+  
+  .token.atrule,
+  .token.attr-value,
+  .token.keyword {
+    color: var(--monzed-elements-textPrimary);
+  }
+  
+  .token.function,
+  .token.class-name {
+    color: var(--monzed-elements-textPrimary);
+  }
+  
+  .token.regex,
+  .token.important,
+  .token.variable {
+    color: var(--monzed-elements-textPrimary);
+  }
+  
+  .token.important,
+  .token.bold {
+    font-weight: bold;
+  }
+  
+  .token.italic {
+    font-style: italic;
+  }
+}

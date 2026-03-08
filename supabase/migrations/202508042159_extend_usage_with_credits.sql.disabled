@@ -1,0 +1,58 @@
+-- 202508042159_extend_usage_with_credits.sql
+-- Adds prepaid credits from credit_balances to the effective message limit returned
+-- by get_user_usage(user_uuid). Stripe subscription logic remains unchanged.
+-- Safe to run in production; only replaces a function definition.
+
+create or replace function public.get_user_usage(user_uuid uuid)
+returns table(
+  total_messages bigint,
+  user_messages bigint,
+  assistant_messages bigint,
+  message_limit integer,
+  usage_percentage numeric
+) as $$
+declare
+  billing_period   record;
+  plan_limit       integer;
+  prepaid_credits  integer;
+begin
+  -- 1) Determine current billing period
+  select * into billing_period from get_current_billing_period(user_uuid);
+
+  -- 2) Base limit from active plan (Stripe or free tier)
+  select sp.message_limit into plan_limit
+  from user_subscriptions us
+  join subscription_plans sp on us.plan_id = sp.id
+  where us.user_id = user_uuid and us.status = 'active';
+
+  if plan_limit is null then
+    plan_limit := 5;  -- free-tier default
+  end if;
+
+  -- 3) Add any prepaid credits purchased via crypto top-ups
+  select credits into prepaid_credits
+  from credit_balances
+  where user_id = user_uuid;
+
+  if prepaid_credits is null then
+    prepaid_credits := 0;
+  end if;
+
+  plan_limit := plan_limit + prepaid_credits;
+
+  -- 4) Return usage stats
+  return query
+  select
+    coalesce(sum(case when mu.message_type = 'user' then mu.message_count else 0 end), 0) as total_messages,
+    coalesce(sum(case when mu.message_type = 'user' then mu.message_count else 0 end), 0) as user_messages,
+    coalesce(sum(case when mu.message_type = 'assistant' then mu.message_count else 0 end), 0) as assistant_messages,
+    plan_limit as message_limit,
+    round(
+      (coalesce(sum(case when mu.message_type = 'user' then mu.message_count else 0 end), 0)::numeric / plan_limit::numeric) * 100, 2
+    ) as usage_percentage
+  from message_usage mu
+  where mu.user_id = user_uuid
+    and mu.billing_period_start = billing_period.period_start
+    and mu.billing_period_end   = billing_period.period_end;
+end;
+$$ language plpgsql security definer;

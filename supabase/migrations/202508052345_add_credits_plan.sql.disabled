@@ -1,0 +1,106 @@
+-- 202508052345_add_credits_plan.sql
+-- Adds a special "credits" plan for users who are on a pure credit-based system
+-- This allows Stripe subscribers to have their plan credits added to existing balances
+
+-- 1. Insert the special "credits" plan
+INSERT INTO public.subscription_plans (id, name, description, price_cents, currency, message_limit, features, is_active)
+VALUES (
+  'credits',
+  'Credit-Based Plan',
+  'Flexible credit-based messaging with credits from multiple sources',
+  0, -- No recurring price since credits are purchased separately
+  'USD',
+  1, -- Placeholder value (ignored for credit-based plans - all limits come from credit_balances)
+  '["Flexible credit usage", "Multiple payment methods", "No monthly limits"]'::jsonb,
+  true
+)
+ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name,
+  description = EXCLUDED.description,
+  features = EXCLUDED.features,
+  is_active = EXCLUDED.is_active,
+  updated_at = now();
+
+-- 2. Update get_user_usage function to handle the special "credits" plan
+create or replace function public.get_user_usage(user_uuid uuid)
+returns table(
+  total_messages bigint,
+  user_messages bigint,
+  assistant_messages bigint,
+  message_limit integer,
+  usage_percentage numeric
+) as $$
+declare
+  billing_period   record;
+  plan_limit       integer := 0;
+  prepaid_credits  integer := 0;
+  total_limit      integer := 0;
+  user_plan_id     text;
+begin
+  -- 1) Determine current billing period
+  select * into billing_period from get_current_billing_period(user_uuid);
+  
+  if billing_period is null then
+    raise exception 'Could not determine billing period for user %', user_uuid;
+  end if;
+
+  -- 2) Get user's current plan
+  select us.plan_id into user_plan_id
+  from user_subscriptions us
+  where us.user_id = user_uuid and us.status = 'active';
+
+  -- 3) Handle different plan types
+  if user_plan_id = 'credits' then
+    -- User is on pure credit-based system - all limits come from credit_balances
+    plan_limit := 0;
+    raise notice 'User % is on credit-based plan', user_uuid;
+  else
+    -- User has a traditional plan - get base limit from plan
+    select sp.message_limit into plan_limit
+    from user_subscriptions us
+    join subscription_plans sp on us.plan_id = sp.id
+    where us.user_id = user_uuid and us.status = 'active';
+
+    if plan_limit is null then
+      plan_limit := 5;  -- free-tier default
+      raise notice 'User % has no active subscription, using free tier limit of %', user_uuid, plan_limit;
+    else
+      raise notice 'User % has active subscription with plan limit of %', user_uuid, plan_limit;
+    end if;
+  end if;
+
+  -- 4) Add any prepaid credits from crypto/Stripe purchases
+  select credits into prepaid_credits
+  from credit_balances
+  where user_id = user_uuid;
+
+  if prepaid_credits is null then
+    prepaid_credits := 0;
+  end if;
+  
+  raise notice 'User % has % prepaid credits', user_uuid, prepaid_credits;
+
+  total_limit := plan_limit + prepaid_credits;
+  
+  raise notice 'User % total limit: % (plan: % + credits: %)', user_uuid, total_limit, plan_limit, prepaid_credits;
+
+  -- 5) Return usage stats
+  return query
+  select
+    coalesce(sum(case when mu.message_type = 'user' then mu.message_count else 0 end), 0) as total_messages,
+    coalesce(sum(case when mu.message_type = 'user' then mu.message_count else 0 end), 0) as user_messages,
+    coalesce(sum(case when mu.message_type = 'assistant' then mu.message_count else 0 end), 0) as assistant_messages,
+    total_limit as message_limit,
+    round(
+      case 
+        when total_limit > 0 then
+          (coalesce(sum(case when mu.message_type = 'user' then mu.message_count else 0 end), 0)::numeric / total_limit::numeric) * 100
+        else 0
+      end, 2
+    ) as usage_percentage
+  from message_usage mu
+  where mu.user_id = user_uuid
+    and mu.billing_period_start = billing_period.period_start
+    and mu.billing_period_end   = billing_period.period_end;
+end;
+$$ language plpgsql security definer;

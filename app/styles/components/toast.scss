@@ -1,0 +1,79 @@
+.Toastify__toast {
+  --at-apply: shadow-md;
+
+  background: var(--monzed-elements-bg-depth-1);
+  color: var(--monzed-elements-textPrimary);
+  border: 1px solid var(--monzed-elements-borderColor);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  font-family: inherit;
+  min-height: 64px;
+  
+  // Success toast with subtle monzed accent
+  &.Toastify__toast--success {
+    border-left: 3px solid var(--color-monzed-accent, #FC7C11);
+  }
+  
+  // Error toast with monzed-yellow accent
+  &.Toastify__toast--error {
+    border-left: 3px solid var(--monzed-elements-icon-error);
+  }
+  
+  // Info toast with subtle border
+  &.Toastify__toast--info {
+    border-left: 3px solid var(--monzed-elements-borderColorActive);
+  }
+  
+  // Warning toast with yellow accent
+  &.Toastify__toast--warning {
+    border-left: 3px solid var(--color-citrus-electric, #E6FF00);
+  }
+}
+
+.Toastify__close-button {
+  color: var(--monzed-elements-item-contentDefault);
+  opacity: 1;
+  transition: color 0.2s ease;
+  align-self: flex-start;
+  margin-top: 2px;
+
+  &:hover {
+    color: var(--monzed-elements-item-contentActive);
+  }
+}
+
+// Progress bar styling
+.Toastify__progress-bar {
+  &.Toastify__progress-bar--success {
+    background: var(--color-monzed-accent, #FC7C11);
+  }
+  
+  &.Toastify__progress-bar--error {
+    background: var(--monzed-elements-icon-error);
+  }
+  
+  &.Toastify__progress-bar--info {
+    background: var(--monzed-elements-borderColorActive);
+  }
+  
+  &.Toastify__progress-bar--warning {
+    background: var(--color-citrus-electric, #E6FF00);
+  }
+}
+
+// Toast body for better text readability
+.Toastify__toast-body {
+  padding: 8px 0;
+  
+  // Ensure text is always readable
+  p, div, span {
+    color: var(--monzed-elements-textPrimary) !important;
+    line-height: 1.4;
+    font-weight: 500;
+  }
+}
+
+// Toast container positioning
+.Toastify__toast-container {
+  padding: 4px;
+}

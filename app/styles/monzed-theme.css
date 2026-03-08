@@ -1,0 +1,406 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
+
+/* Base font size for consistent rem calculations */
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: 'DM Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 1rem;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Electric Blue Light Mode Theme Variables - keeping original variable names for compatibility */
+:root,
+:root[data-theme='light'] {
+  /* monzed theme colors - Electric Blue values (variable names unchanged) */
+  --color-monzed-accent: #FC7C11;
+  --color-monzed-bright: #FC7C11;
+  --color-monzed-cream: #FECBA0;
+  --color-monzed-glow: #FC7C11;
+  --color-citrus-electric: #FC7C11;
+  --color-mint-cyber: #FECBA0;
+  
+  /* Light mode backgrounds and text */
+  --color-bg-primary: #FFFFFF;     /* Pure white background */
+  --color-bg-secondary: #F8FAFC;   /* Light gray background */
+  --color-bg-tertiary: #F1F5F9;    /* Lighter gray */
+  --color-text-primary: #0F172A;   /* Dark text on light background */
+  --color-text-secondary: #475569; /* Medium gray text */
+  --color-text-tertiary: #94A3B8;  /* Light gray text */
+  --color-border: #CBD5E1;         /* Light border - increased intensity */
+  --color-border-bright: #94A3B8;  /* Medium border - increased intensity */
+  
+  /* Gradient definitions - Electric Blue gradients with original names */
+  --gradient-monzed: linear-gradient(135deg, var(--color-monzed-accent) 0%, var(--color-monzed-bright) 100%);
+  --gradient-cyber: linear-gradient(135deg, var(--color-mint-cyber) 0%, var(--color-citrus-electric) 100%);
+  --gradient-glow: linear-gradient(135deg, var(--color-monzed-glow) 0%, var(--color-monzed-accent) 50%, var(--color-mint-cyber) 100%);
+}
+
+/* Dark Mode Theme Variables */
+:root[data-theme='dark'] {
+  /* monzed theme colors - Electric Blue values for dark mode */
+  --color-monzed-accent: #FC7C11;
+  --color-monzed-bright: #FC7C11;
+  --color-monzed-cream: #FC7C11;
+  --color-monzed-glow: #FC7C11;
+  --color-citrus-electric: #FECBA0;
+  --color-mint-cyber: #FC7C11;
+  
+  /* Dark mode backgrounds and text */
+  --color-bg-primary: #1E1E21;     /* Dark background */
+  --color-bg-secondary: #252528;   /* Slightly lighter dark background */
+  --color-bg-tertiary: #2C2C2F;    /* Lighter dark gray */
+  --color-text-primary: #FFFFFF;   /* White text on dark background */
+  --color-text-secondary: #A3A3A3; /* Light gray text */
+  --color-text-tertiary: #525252;  /* Medium gray text */
+  --color-border: #333333;         /* Dark border - increased intensity */
+  --color-border-bright: #525252;  /* Lighter dark border - increased intensity */
+  
+  /* Gradient definitions - Electric Blue gradients for dark mode */
+  --gradient-monzed: linear-gradient(135deg, var(--color-monzed-accent) 0%, var(--color-monzed-bright) 100%);
+  --gradient-cyber: linear-gradient(135deg, var(--color-mint-cyber) 0%, var(--color-citrus-electric) 100%);
+  --gradient-glow: linear-gradient(135deg, var(--color-monzed-glow) 0%, var(--color-monzed-accent) 50%, var(--color-mint-cyber) 100%);
+}
+
+/* Starsky Theme Utility Classes - keeping original class names */
+/* Starsky background classes */
+.monzed-bg-primary { 
+  background-color: var(--color-bg-primary) !important;
+}
+
+.monzed-bg-secondary { 
+  background-color: var(--color-bg-secondary) !important;
+}
+
+.monzed-bg-tertiary { 
+  background-color: var(--color-bg-tertiary) !important;
+}
+
+.monzed-text-primary { color: var(--color-text-primary) !important; }
+.monzed-text-secondary { color: var(--color-text-secondary) !important; }
+.monzed-text-tertiary { color: var(--color-text-tertiary) !important; }
+
+.monzed-border { border-color: var(--color-border) !important; }
+.monzed-border-bright { border-color: var(--color-monzed-accent) !important; }
+.border-transparent { border-color: transparent !important; }
+
+.monzed-bg-accent { background-color: var(--color-monzed-accent) !important; }
+
+/* Additional color utilities - keeping original class names */
+.text-monzed-accent { color: var(--color-monzed-accent) !important; }
+.text-monzed-glow { color: var(--color-monzed-glow) !important; }
+.text-monzed-bright { color: var(--color-monzed-bright) !important; }
+.bg-monzed-accent { background-color: var(--color-monzed-accent) !important; }
+.bg-monzed-glow { background-color: var(--color-monzed-glow) !important; }
+.bg-monzed-bright { background-color: var(--color-monzed-bright) !important; }
+.border-monzed-accent { border-color: var(--color-monzed-accent) !important; }
+.focus\:ring-monzed-accent:focus { --un-ring-color: var(--color-monzed-accent); }
+.focus\:border-monzed-accent:focus { border-color: var(--color-monzed-accent) !important; }
+.placeholder-monzed-text-tertiary::placeholder { color: var(--color-text-tertiary) !important; }
+
+/* Light mode buttons - keeping original class names, Electric Blue with white text */
+.monzed-btn-primary {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  background: var(--gradient-monzed);
+  color: #FFFFFF; /* White text on blue background for light mode */
+  border: 1px solid var(--color-monzed-bright);
+}
+
+.monzed-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 40px rgba(0, 17, 255, 0.25); /* Softer shadow for light mode */
+}
+
+.monzed-btn-secondary {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  border-radius: 0.75rem;
+  background: transparent;
+  color: var(--color-monzed-accent); /* Electric Blue text */
+  border: 1px solid var(--color-monzed-bright);
+}
+
+.monzed-btn-secondary:hover {
+  background: var(--color-bg-tertiary);
+  border-color: var(--color-monzed-accent);
+  box-shadow: 0 0 20px rgba(0, 17, 255, 0.15); /* Light mode shadow */
+}
+
+/* Animated grid background - static for performance */
+.monzed-grid-bg {
+  background-image: 
+    linear-gradient(rgba(0, 17, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 17, 255, 0.05) 1px, transparent 1px);
+  background-size: 50px 50px;
+  /* Animation disabled for performance */
+}
+
+/* Floating orbs - static for performance */
+.monzed-floating-orb {
+  position: absolute;
+  border-radius: 50%;
+  background: var(--gradient-glow);
+  /* Animation disabled for performance */
+  filter: blur(1px);
+}
+
+@keyframes float-complex {
+  0%, 100% {
+    transform: translateY(0px) translateX(0px) scale(1);
+    opacity: 0.7;
+  }
+  25% {
+    transform: translateY(-30px) translateX(20px) scale(1.1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: translateY(-60px) translateX(-10px) scale(0.9);
+    opacity: 0.6;
+  }
+  75% {
+    transform: translateY(-20px) translateX(-30px) scale(1.05);
+    opacity: 0.8;
+  }
+}
+
+/* Text glow effect - light mode */
+.monzed-text-glow {
+  text-shadow: 0 0 20px rgba(113, 169, 247, 0.6); /* Lime green glow (#C7FE47) for light mode */
+}
+
+/* Pulse animation for interactive elements - light mode */
+.monzed-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes pulse-glow {
+  from {
+    box-shadow: 0 0 20px rgba(232, 240, 53, 0.3);
+  }
+  to {
+    box-shadow: 0 0 40px rgba(232, 240, 53, 0.6);
+  }
+}
+
+/* Glassmorphism utilities */
+.monzed-glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.monzed-glass-strong {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Enhanced blob animation */
+@keyframes monzed-blob {
+  0% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  33% {
+    transform: translate(30px, -50px) scale(1.1);
+  }
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+  100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+}
+
+/* .monzed-animate-blob animation disabled for performance */
+
+.monzed-animation-delay-2000 {
+  animation-delay: 2s;
+}
+
+.monzed-animation-delay-4000 {
+  animation-delay: 4s;
+}
+
+/* Smooth scroll reveal animation */
+@keyframes monzed-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.monzed-animate-reveal {
+  animation: monzed-reveal 0.8s ease-out forwards;
+}
+
+/* Shimmer effect for buttons and highlights */
+@keyframes monzed-shimmer {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+.monzed-shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(232, 240, 53, 0.3) 50%,
+    transparent 100%
+  );
+  background-size: 200% auto;
+  /* Animation disabled for performance */
+}
+
+/* Shimmer animation for text */
+.animate-shimmer {
+  animation: monzed-shimmer 3s linear infinite;
+}
+
+/* Gradient text animation */
+@keyframes monzed-gradient-shift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.monzed-gradient-animate {
+  background-size: 200% 200%;
+  /* Animation disabled for performance */
+}
+
+/* Optimized floating animation for mobile */
+@keyframes monzed-float-simple {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+.monzed-float-simple {
+  animation: monzed-float-simple 4s ease-in-out infinite;
+}
+
+/* Cyber glow effect */
+@keyframes monzed-cyber-glow {
+  0%, 100% {
+    filter: drop-shadow(0 0 10px var(--color-mint-cyber));
+  }
+  50% {
+    filter: drop-shadow(0 0 20px var(--color-mint-cyber));
+  }
+}
+
+/* .monzed-cyber-glow animation disabled for performance */
+
+/* Font styling overrides for monzed theme */
+.monzed-font-dm-sans {
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+}
+
+/* Responsive text utilities */
+.monzed-text-responsive-xl { 
+  font-size: 1.5rem;
+}
+@media (min-width: 640px) {
+  .monzed-text-responsive-xl { font-size: 1.875rem; }
+}
+
+.monzed-text-responsive-2xl { 
+  font-size: 1.875rem;
+}
+@media (min-width: 640px) {
+  .monzed-text-responsive-2xl { font-size: 2.25rem; }
+}
+
+.monzed-text-responsive-4xl { 
+  font-size: 2.25rem;
+}
+@media (min-width: 640px) {
+  .monzed-text-responsive-4xl { font-size: 3rem; }
+}
+
+/* Dark Mode Overrides */
+:root[data-theme='dark'] {
+  /* Grid background for dark mode */
+  .monzed-grid-bg {
+    background-image: 
+      linear-gradient(rgba(74, 144, 226, 0.1) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(74, 144, 226, 0.1) 1px, transparent 1px);
+  }
+  
+  /* Button hover effects for dark mode */
+  .monzed-btn-secondary:hover {
+    box-shadow: 0 0 20px rgba(74, 144, 226, 0.3);
+  }
+  
+  .monzed-btn-primary:hover {
+    box-shadow: 0 20px 40px rgba(74, 144, 226, 0.4);
+  }
+  
+  /* Text glow for dark mode */
+  .monzed-text-glow {
+    text-shadow: 0 0 20px rgba(199, 254, 71, 0.6);
+  }
+  
+  /* Glassmorphism for dark mode */
+  .monzed-glass {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(74, 144, 226, 0.2);
+  }
+}
+
+/* Additional dark mode styles that need to be applied globally */
+html[data-theme='dark'] .monzed-grid-bg {
+  background-image: 
+    linear-gradient(rgba(74, 144, 226, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(74, 144, 226, 0.1) 1px, transparent 1px);
+}
+
+html[data-theme='dark'] .monzed-btn-secondary:hover {
+  box-shadow: 0 0 20px rgba(74, 144, 226, 0.3);
+}
+
+html[data-theme='dark'] .monzed-btn-primary:hover {
+  box-shadow: 0 20px 40px rgba(74, 144, 226, 0.4);
+}
+
+html[data-theme='dark'] .monzed-text-glow {
+  text-shadow: 0 0 20px rgba(199, 254, 71, 0.6);
+}
+
+html[data-theme='dark'] .monzed-glass {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(74, 144, 226, 0.2);
+}

@@ -1,0 +1,189 @@
+/* Mobile Performance Optimizations */
+@media (max-width: 768px) {
+  /* Disable complex animations on mobile for better performance */
+  .monzed-floating-orb {
+    animation: none;
+  }
+  
+  /* Reduce grid background complexity on mobile */
+  .monzed-grid-bg {
+    background-size: 30px 30px;
+  }
+  
+  /* Remove backdrop blur on mobile for performance */
+  .backdrop-blur-md {
+    backdrop-filter: none;
+    background-color: rgba(255, 255, 255, 0.95);
+  }
+  
+  .backdrop-blur-sm {
+    backdrop-filter: none;
+    background-color: rgba(255, 255, 255, 0.9);
+  }
+  
+  /* Smooth scrolling with momentum */
+  html {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+  
+  /* Reduce animation complexity on smaller screens */
+  .monzed-animate-blob {
+    animation: none;
+  }
+  
+  /* Optimize text rendering */
+  .monzed-text-glow {
+    text-shadow: 0 0 10px rgba(199, 254, 71, 0.3);
+  }
+}
+
+/* Optimize hover states for touch devices */
+@media (hover: none) {
+  .hover\:scale-105:hover {
+    transform: scale(1);
+  }
+  
+  .hover\:shadow-2xl:hover {
+    box-shadow: none;
+  }
+}
+
+/* Touch-friendly interactive elements */
+@media (pointer: coarse) {
+  button, a, .clickable {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Larger tap targets for mobile */
+  .monzed-btn-primary,
+  .monzed-btn-secondary {
+    padding: 1rem 1.5rem;
+  }
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  .monzed-floating-orb,
+  .monzed-animate-blob,
+  .monzed-grid-bg {
+    animation: none !important;
+  }
+}
+
+/* GPU acceleration for smooth animations */
+.will-change-transform {
+  will-change: transform;
+}
+
+.will-change-opacity {
+  will-change: opacity;
+}
+
+/* Optimize font loading */
+.monzed-font-dm-sans {
+  font-display: swap;
+}
+
+/* Mobile header specific optimizations */
+@media (max-width: 768px) {
+  /* Ensure header is always accessible */
+  header {
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    transform: translateZ(0);
+  }
+  
+  /* Smooth mobile menu transitions */
+  .md\:hidden {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+  }
+}
+
+/* Control Panel Mobile Optimizations */
+@media (max-width: 640px) {
+  /* Full screen modal on mobile */
+  [role="dialog"] {
+    position: fixed !important;
+    inset: 0 !important;
+    margin: 0 !important;
+  }
+  
+  /* Better scrolling in modals */
+  [role="dialog"] .overflow-y-auto {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+  
+  /* Optimize tab tiles for mobile */
+  .aspect-\[1\.5\/1\] {
+    aspect-ratio: 1 / 1;
+  }
+  
+  /* Smaller text in tight spaces */
+  .text-xs {
+    font-size: 0.7rem;
+  }
+  
+  /* Touch-friendly tab tiles */
+  [role="button"] {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+/* Modal animations for mobile */
+@media (max-width: 640px) {
+  /* Slide up animation for mobile modals */
+  @keyframes slideUp {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+  
+  /* Apply slide animation to modal content */
+  [role="dialog"] > div {
+    animation: slideUp 0.3s ease-out;
+  }
+}
+
+/* iOS specific fixes */
+@supports (-webkit-touch-callout: none) {
+  /* Fix for iOS viewport height */
+  .h-\[100dvh\] {
+    height: 100vh;
+    height: -webkit-fill-available;
+  }
+  
+  /* Fix for iOS safe areas */
+  .pb-\[env\(safe-area-inset-bottom\)\] {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* Performance optimizations for intersection observer animations */
+.monzed-animate-reveal {
+  will-change: opacity, transform;
+}
+
+/* Optimize large gradient texts on mobile */
+@media (max-width: 640px) {
+  .text-5xl,
+  .text-6xl,
+  .text-7xl {
+    background-size: 150% 150%;
+  }
+}

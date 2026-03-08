@@ -1,0 +1,61 @@
+-- Migration: Add credit_balances and payment_orders tables for unified Stripe & Crypto payments
+
+-- 1. credit_balances keeps a running total of a user's credits.
+create table if not exists public.credit_balances (
+    user_id uuid primary key references auth.users(id) on delete cascade,
+    credits integer not null default 0,
+    updated_at timestamptz not null default now()
+);
+
+alter table public.credit_balances enable row level security;
+
+-- Allow users to view their own balance
+create policy "Allow user read own credit balance" on public.credit_balances
+  for select
+  using ( auth.uid() = user_id );
+
+-- Updates are performed by backend service role only (no explicit policy; rely on elevated key).
+
+------------------------------------------------------------------
+-- 2. payment_orders tracks purchase attempts for both Stripe and Crypto
+create table if not exists public.payment_orders (
+    id uuid primary key default gen_random_uuid(),
+    user_id uuid not null references auth.users(id) on delete cascade,
+    method text not null check (method in ('stripe','crypto')),
+    amount_credits integer not null,
+    amount_usd numeric(10,2),
+    status text not null check (status in ('pending','paid','failed')) default 'pending',
+    provider_ref text,
+    created_at timestamptz not null default now(),
+    paid_at timestamptz
+);
+
+alter table public.payment_orders enable row level security;
+
+-- Users can read their own orders
+create policy "Users can read own payment orders" on public.payment_orders
+  for select
+  using ( auth.uid() = user_id );
+
+-- Users may insert a new order for themselves (Stripe checkout or Crypto intent)
+create policy "Users can create their own payment orders" on public.payment_orders
+  for insert
+  with check ( auth.uid() = user_id );
+
+-- Updates/deletes restricted to service key only (no additional policy).
+
+------------------------------------------------------------------
+-- 3. helper function to increment credits atomically
+create or replace function public.increment_credits(p_user_id uuid, p_delta int)
+returns void language plpgsql security definer as $$
+begin
+  insert into public.credit_balances(user_id, credits)
+    values (p_user_id, greatest(p_delta,0))
+  on conflict (user_id) do
+    update set credits = credit_balances.credits + greatest(p_delta,0),
+               updated_at = now();
+end;
+$$;
+
+
+------------------------------------------------------------------
