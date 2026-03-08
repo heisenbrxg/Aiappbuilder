@@ -70,16 +70,11 @@ export default function Workspace() {
   const [isLoading, setIsLoading] = useState(false);
   const [projectsLoaded, setProjectsLoaded] = useState(false);
 
-  // Redirect unauthenticated users to landing page
-  useEffect(() => {
-    if (!user && !authLoading) {
-      navigate('/');
-    }
-  }, [user, authLoading, navigate]);
+  // Removed auth redirect
 
-  // Fetch projects when user authentication changes
+  // Fetch projects when workspace loads
   const fetchProjects = useCallback(async () => {
-    if (!user || isLoading) return;
+    if (isLoading) return;
 
     setIsLoading(true);
     try {
@@ -102,20 +97,14 @@ export default function Workspace() {
     } finally {
       setIsLoading(false);
     }
-  }, [user, isLoading]);
+  }, [isLoading]);
 
-  // Load projects when user logs in
+  // Load projects when workspace mounts
   useEffect(() => {
-    if (user && !authLoading && !projectsLoaded) {
+    if (!authLoading && !projectsLoaded) {
       fetchProjects();
-    } else if (!user && !authLoading) {
-      // Clear projects when user logs out
-      setProjects([]);
-      setHasMore(false);
-      setTotalProjects(0);
-      setProjectsLoaded(false);
     }
-  }, [user, authLoading, projectsLoaded, fetchProjects]);
+  }, [authLoading, projectsLoaded, fetchProjects]);
 
   const loadMoreProjects = useCallback(async () => {
     if (isLoading || !hasMore) return;
@@ -146,10 +135,7 @@ export default function Workspace() {
     return <LoadingSpinner message="Loading workspace..." fullPage />;
   }
 
-  // Redirect if not authenticated
-  if (!user && !authLoading) {
-    return <LoadingSpinner message="Redirecting..." fullPage />;
-  }
+  // Removing auth redirect check
 
   return (
     <div className="flex flex-col h-screen w-full monzed-bg-primary overflow-hidden">

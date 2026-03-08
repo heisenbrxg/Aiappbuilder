@@ -11,30 +11,23 @@ export function useAuthGuard() {
 
   /**
    * Check if user is authenticated before allowing an action.
-   * @returns boolean - true if authenticated, false otherwise
+   * @returns boolean - always true since we removed login requirement
    */
   const requireAuth = (): boolean => {
-    if (!user) {
-      navigate('/login')
-      return false
-    }
     return true
   }
 
   /**
-   * Wrapper function that only executes the callback if user is authenticated.
-   * If not authenticated, shows the auth modal instead.
+   * Wrapper function that always executes the callback.
    */
   const withAuth = (callback: () => void | Promise<void>) => {
     return () => {
-      if (requireAuth()) {
-        callback()
-      }
+      callback()
     }
   }
 
   return {
-    isAuthenticated: !!user,
+    isAuthenticated: true,
     requireAuth,
     withAuth
   }

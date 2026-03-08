@@ -23,11 +23,11 @@ export default function Hero() {
   const [input, setInput] = useState('');
   // Model settings collapsed state removed - using better dialog-based selector
   const [modelList, setModelList] = useState<SimpleModel[]>([]);
-  
+
   // Provider and model state for selection
   const [provider, setProvider] = useState(PROVIDER_LIST.find(p => p.name === 'Anthropic') || PROVIDER_LIST[0]);
   const [model, setModel] = useState('claude-3-5-sonnet-20241022');
-  
+
   // Load REAL model list exactly like workspace does
   useEffect(() => {
     fetch('/api/models')
@@ -51,10 +51,10 @@ export default function Hero() {
         setModelList(basicModels);
       });
   }, []);
-  
+
   // Exact textarea height calculation from workspace
   const TEXTAREA_MAX_HEIGHT = 120; // Not chatStarted, so use 120
-  
+
   // Typewriter animation for placeholder
   const animatedPlaceholder = useTypewriter({
     phrases: [
@@ -70,15 +70,15 @@ export default function Hero() {
     deletingSpeed: 40,
     pauseDuration: 2500,
   });
-  
+
   // Teaser handlers (auth-guarded)
   const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInput(event.target.value);
   };
-  
+
   const handleSendMessage = () => {
-    // Auth guard - redirect to login
-    window.location.href = '/login';
+    // Send to workspace with prompt in URL
+    window.location.href = `/workspace?q=${encodeURIComponent(input)}`;
   };
 
   return (
@@ -87,8 +87,8 @@ export default function Hero() {
         <div className="relative pb-12 pt-20">
           {/* EXACT workspace hero section */}
           <div className="relative overflow-hidden">
-            <div 
-              id="intro" 
+            <div
+              id="intro"
               className="relative flex-shrink-0 max-w-5xl mx-auto text-center px-4 sm:px-6 lg:px-0 pt-16 sm:pt-20 lg:pt-24 pb-4 z-10"
             >
               <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-monzed-elements-textPrimary mb-4 sm:mb-6 leading-tight tracking-tight">
@@ -102,7 +102,7 @@ export default function Hero() {
               </p>
             </div>
           </div>
-          
+
           {/* EXACT chatbox container from workspace */}
           <div className="px-4 sm:pl-[10px] sm:pr-6 relative flex-shrink-0">
             <div className="flex flex-col gap-2 w-full max-w-chat mx-auto z-prompt relative py-4 sm:py-6 z-20">
@@ -115,40 +115,40 @@ export default function Hero() {
                 modelList={modelList}
                 apiKeys={{}}
                 isModelLoading={undefined}
-                onApiKeysChange={() => {}} // Disabled in teaser
+                onApiKeysChange={() => { }} // Disabled in teaser
                 uploadedFiles={[]}
-                setUploadedFiles={() => {}} // Disabled in teaser
+                setUploadedFiles={() => { }} // Disabled in teaser
                 imageDataList={[]}
-                setImageDataList={() => {}} // Disabled in teaser
+                setImageDataList={() => { }} // Disabled in teaser
                 textareaRef={textareaRef}
                 input={input}
                 handleInputChange={handleInputChange}
-                handlePaste={() => {}} // Disabled in teaser
+                handlePaste={() => { }} // Disabled in teaser
                 TEXTAREA_MIN_HEIGHT={TEXTAREA_MIN_HEIGHT}
                 TEXTAREA_MAX_HEIGHT={TEXTAREA_MAX_HEIGHT}
                 isStreaming={false}
-                handleStop={() => {}} // Disabled in teaser
+                handleStop={() => { }} // Disabled in teaser
                 handleSendMessage={handleSendMessage} // Auth-guarded
                 enhancingPrompt={false}
-                enhancePrompt={() => {}} // Disabled in teaser
+                enhancePrompt={() => { }} // Disabled in teaser
                 isListening={false}
-                startListening={() => {}} // Disabled in teaser
-                stopListening={() => {}} // Disabled in teaser
+                startListening={() => { }} // Disabled in teaser
+                stopListening={() => { }} // Disabled in teaser
                 chatStarted={false}
-                exportChat={() => {}} // Disabled in teaser
+                exportChat={() => { }} // Disabled in teaser
                 qrModalOpen={false}
-                setQrModalOpen={() => {}} // Disabled in teaser
-                handleFileUpload={() => {}} // Disabled in teaser
+                setQrModalOpen={() => { }} // Disabled in teaser
+                handleFileUpload={() => { }} // Disabled in teaser
                 chatMode="build"
-                setChatMode={() => {}} // Disabled in teaser
+                setChatMode={() => { }} // Disabled in teaser
                 designScheme={undefined}
-                setDesignScheme={() => {}} // Disabled in teaser
+                setDesignScheme={() => { }} // Disabled in teaser
                 selectedElement={null}
-                setSelectedElement={() => {}} // Disabled in teaser
-                onFigmaDataExtracted={() => {}} // Disabled in teaser
+                setSelectedElement={() => { }} // Disabled in teaser
+                onFigmaDataExtracted={() => { }} // Disabled in teaser
                 placeholder={animatedPlaceholder} // Animated typewriter placeholder
               />
-              
+
               {/* Example Prompts below chatbox - EXACT workspace positioning */}
               <ExamplePrompts />
             </div>
