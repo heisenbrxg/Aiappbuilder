@@ -1,7 +1,7 @@
 import type { AppLoadContext } from '@remix-run/cloudflare';
 import { RemixServer } from '@remix-run/react';
 import { isbot } from 'isbot';
-import { renderToReadableStream } from 'react-dom/server';
+import { renderToReadableStream } from 'react-dom/server.browser';
 import { renderHeadToString } from 'remix-island';
 import { Head } from './root';
 import { themeStore } from '~/lib/stores/theme';
@@ -17,7 +17,7 @@ export default async function handleRequest(
   // await initializeModelList({});
 
   let readable: ReadableStream;
-  
+
   try {
     readable = await renderToReadableStream(<RemixServer context={remixContext} url={request.url} />, {
       signal: request.signal,
@@ -44,7 +44,7 @@ export default async function handleRequest(
   (async () => {
     try {
       const head = renderHeadToString({ request, remixContext, Head });
-      
+
       // Write the HTML head
       await writer.write(
         new TextEncoder().encode(
@@ -57,7 +57,7 @@ export default async function handleRequest(
         onError: (error) => {
           console.error('Stream pipe error:', error);
           // Try to write an error message if possible
-          writer.write(new TextEncoder().encode('<div>Error loading content</div>')).catch(() => {});
+          writer.write(new TextEncoder().encode('<div>Error loading content</div>')).catch(() => { });
         },
         onComplete: async () => {
           await writer.write(new TextEncoder().encode('</div></body></html>'));

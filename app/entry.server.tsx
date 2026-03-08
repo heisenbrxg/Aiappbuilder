@@ -1,7 +1,7 @@
 import type { AppLoadContext } from '@remix-run/cloudflare';
 import { RemixServer } from '@remix-run/react';
 import { isbot } from 'isbot';
-import { renderToReadableStream } from 'react-dom/server';
+import { renderToReadableStream } from 'react-dom/server.browser';
 import { renderHeadToString } from 'remix-island';
 import { Head } from './root';
 import { themeStore } from '~/lib/stores/theme';
@@ -18,21 +18,21 @@ export default async function handleRequest(
   // Add security headers for WebContainer compatibility
   responseHeaders.set('Cross-Origin-Embedder-Policy', 'credentialless');
   responseHeaders.set('Cross-Origin-Opener-Policy', 'same-origin');
-  
+
   // Additional security headers
   responseHeaders.set('X-Content-Type-Options', 'nosniff');
   responseHeaders.set('X-Frame-Options', 'DENY');
   responseHeaders.set('X-XSS-Protection', '1; mode=block');
   responseHeaders.set('Referrer-Policy', 'strict-origin-when-cross-origin');
-  
+
   // Prevent access to sensitive files via headers
   const { pathname } = new URL(request.url);
   const sensitivePatterns = ['.env', 'wrangler.toml', 'package.json', '.git'];
-  
+
   if (sensitivePatterns.some(pattern => pathname.includes(pattern))) {
     responseHeaders.set('Cache-Control', 'no-cache, no-store, must-revalidate');
   }
-  
+
   // Note: Permissions-Policy removed to prevent violations in development environment
 
   const readable = await renderToReadableStream(<RemixServer context={remixContext} url={request.url} />, {
