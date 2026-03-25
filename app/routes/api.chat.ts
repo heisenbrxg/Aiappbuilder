@@ -433,7 +433,8 @@ async function chatAction({ context, request }: ActionFunctionArgs) {
       headers: {
         'Content-Type': 'text/event-stream; charset=utf-8',
         'Connection': 'keep-alive',
-        'Cache-Control': 'no-cache',
+        'Cache-Control': 'no-cache, no-transform',
+        'X-Accel-Buffering': 'no',
         'Text-Encoding': 'chunked',
       },
     });

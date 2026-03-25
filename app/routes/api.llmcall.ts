@@ -75,6 +75,9 @@ async function llmCallAction({ context, request }: ActionFunctionArgs) {
         status: 200,
         headers: {
           'Content-Type': 'text/plain; charset=utf-8',
+          'Connection': 'keep-alive',
+          'Cache-Control': 'no-cache, no-transform',
+          'X-Accel-Buffering': 'no',
         },
       });
     } catch (error: unknown) {

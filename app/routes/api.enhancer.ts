@@ -117,7 +117,8 @@ async function enhancerAction({ context, request }: ActionFunctionArgs) {
       headers: {
         'Content-Type': 'text/event-stream',
         Connection: 'keep-alive',
-        'Cache-Control': 'no-cache',
+        'Cache-Control': 'no-cache, no-transform',
+        'X-Accel-Buffering': 'no',
       },
     });
   } catch (error: unknown) {
